@@ -73,7 +73,10 @@
   - [useRef](#useref)
   - [useImperativeHandle](#useimperativehandle)
   - [Custom Hooks](#custom-hooks)
+  - [More Hooks + TypeScript reading:](#more-hooks--typescript-reading)
+  - [Example React Hooks + TypeScript Libraries:](#example-react-hooks--typescript-libraries)
   - [Class Components](#class-components)
+  - [Typing getDerivedStateFromProps](#typing-getderivedstatefromprops)
   - [You May Not Need `defaultProps`](#you-may-not-need-defaultprops)
   - [Typing `defaultProps`](#typing-defaultprops)
   - [Consuming Props of a Component with defaultProps](#consuming-props-of-a-component-with-defaultprops)
@@ -81,6 +84,7 @@
     - [Solution](#solution)
   - [Misc Discussions and Knowledge](#misc-discussions-and-knowledge)
   - [Types or Interfaces?](#types-or-interfaces)
+  - [Typing Component Props](#typing-component-props)
   - [Basic Prop Types Examples](#basic-prop-types-examples)
   - [Useful React Prop Type Examples](#useful-react-prop-type-examples)
   - [getDerivedStateFromProps](#getderivedstatefromprops)
@@ -115,7 +119,6 @@
 - [Troubleshooting Handbook: Utilities](#troubleshooting-handbook-utilities)
 - [Troubleshooting Handbook: tsconfig.json](#troubleshooting-handbook-tsconfigjson)
 - [Troubleshooting Handbook: Fixing bugs in official typings](#troubleshooting-handbook-fixing-bugs-in-official-typings)
-- [Troubleshooting Handbook: Globals, Images and other non-TS files](#troubleshooting-handbook-globals-images-and-other-non-ts-files)
 - [Other React + TypeScript resources](#other-react--typescript-resources)
 - [Editor Tooling and Integration](#editor-tooling-and-integration)
 - [Linting](#linting)
@@ -125,56 +128,8 @@
 - [Example App](#example-app)
 - [My question isn't answered here!](#my-question-isnt-answered-here)
   - [Contributors](#contributors)
-  <!--START-SECTION:setup-toc-->
-  - [Prerequisites](#prerequisites)
-  - [React + TypeScript Starter Kits](#react--typescript-starter-kits)
-  - [Import React](#import-react)<!--END-SECTION:setup-toc-->
-- [Section 2: Getting Started](#section-2-getting-started)
-  - [Function Components](#function-components)
-  - [Hooks](#hooks)
-  - [Class Components](#class-components)
-  - [Typing defaultProps](#typing-defaultprops)
-  - [Types or Interfaces?](#types-or-interfaces)
-  - [Basic Prop Types Examples](#basic-prop-types-examples)
-  - [Useful React Prop Type Examples](#useful-react-prop-type-examples)
-  - [getDerivedStateFromProps](#getDerivedStateFromProps)
-  - [Forms and Events](#forms-and-events)
-  - [Context](#context)
-  - [forwardRef/createRef](#forwardrefcreateref)
-  - [Portals](#portals)
-  - [Error Boundaries](#error-boundaries)
-  - [Concurrent React/React Suspense](#concurrent-reactreact-suspense)
-- [Basic Troubleshooting Handbook: Types](#basic-troubleshooting-handbook-types)
-  <!--START-SECTION:types-toc-->
-  - [Union Types and Type Guarding](#union-types-and-type-guarding)
-  - [Optional Types](#optional-types)
-  - [Enum Types](#enum-types)
-  - [Type Assertion](#type-assertion)
-  - [Simulating Nominal Types](#simulating-nominal-types)
-  - [Intersection Types](#intersection-types)
-  - [Union Types](#union-types)
-  - [Overloading Function Types](#overloading-function-types)
-  - [Using Inferred Types](#using-inferred-types)
-  - [Using Partial Types](#using-partial-types)
-  - [The Types I need weren't exported!](#the-types-i-need-werent-exported)
-  - [The Types I need don't exist!](#the-types-i-need-dont-exist)
-    - [Slapping `any` on everything](#slapping-any-on-everything)
-    - [Autogenerate types](#autogenerate-types)
-    - [Typing Exported Hooks](#typing-exported-hooks)
-    - [Typing Exported Components](#typing-exported-components)<!--END-SECTION:types-toc-->
-- [Troubleshooting Handbook: Operators](#troubleshooting-handbook-operators)
-- [Troubleshooting Handbook: Utilties](#troubleshooting-handbook-utilities)
-- [Troubleshooting Handbook: tsconfig.json](#troubleshooting-handbook-tsconfigjson)
-- [Troubleshooting Handbook: Bugs in official typings](#troubleshooting-handbook-bugs-in-official-typings)
-- [Recommended React + TypeScript codebases to learn from](#recommended-react--typescript-codebases-to-learn-from)
-- [Editor Tooling and Integration](#editor-tooling-and-integration)
-- [Linting](#linting)
-- [Other React + TypeScript resources](#other-react--typescript-resources)
-- [Recommended React + TypeScript talks](#recommended-react--typescript-talks)
-- [Time to Really Learn TypeScript](#time-to-really-learn-typescript)
-- [Example App](#example-app)
-- [My question isn't answered here!](#my-question-isnt-answered-here)
-  </details>
+ 
+</details>
 
 <!--START-SECTION:setup-->
 
@@ -1167,48 +1122,6 @@ Quote [@ferdaber](https://github.com/typescript-cheatsheets/react-typescript-che
 </details>
 
 [More discussion: Where ReactNode does not overlap with JSX.Element](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/129)
-
-[Something to add? File an issue](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/new).
-
-## Types or Interfaces?
-
-You can use either Types or Interfaces to type Props and State, so naturally the question arises - which do you use?
-
-Here's a helpful rule of thumb:
-
-- always use `interface` for public API's definition when authoring a library or 3rd party ambient type definitions, as this allows a consumer to extend them via _declaration merging_ if some definitions are missing.
-
-- consider using `type` for your React Component Props and State, for consistency and because it is more constrained.
-
-You can read more about the reasoning behind this rule of thumb in [Interface vs Type alias in TypeScript 2.7](https://medium.com/@martin_hotell/interface-vs-type-alias-in-typescript-2-7-2a8f1777af4c).
-
-> Note: At scale, there are performance reasons to prefer interfaces ([see official Microsoft notes on this](https://github.com/microsoft/TypeScript/wiki/Performance#preferring-interfaces-over-intersections)) but [take this with a grain of salt](https://news.ycombinator.com/item?id=25201887)
-
-Types are useful for union types (e.g. `type MyType = TypeA | TypeB`) whereas Interfaces are better for declaring dictionary shapes and then `implementing` or `extending` them.
-
-### Useful table for Types vs Interfaces
-
-It's a nuanced topic, don't get too hung up on it. Here's a handy table:
-
-| Aspect                                          | Type | Interface |
-| ----------------------------------------------- | :--: | :-------: |
-| Can describe functions                          |  ✅  |    ✅     |
-| Can describe constructors                       |  ✅  |    ✅     |
-| Can describe tuples                             |  ✅  |    ✅     |
-| Interfaces can extend it                        |  ⚠️  |    ✅     |
-| Classes can extend it                           |  🚫  |    ✅     |
-| Classes can implement it (`implements`)         |  ⚠️  |    ✅     |
-| Can intersect another one of its kind           |  ✅  |    ⚠️     |
-| Can create a union with another one of its kind |  ✅  |    🚫     |
-| Can be used to create mapped types              |  ✅  |    🚫     |
-| Can be mapped over with mapped types            |  ✅  |    ✅     |
-| Expands in error messages and logs              |  ✅  |    🚫     |
-| Can be augmented                                |  🚫  |    ✅     |
-| Can be recursive                                |  ⚠️  |    ✅     |
-
-⚠️ In some cases
-
-(source: [Karol Majewski](https://twitter.com/karoljmajewski/status/1082413696075382785))
 
 [Something to add? File an issue](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/new).
 
@@ -2645,23 +2558,6 @@ process = {
 You can see examples of these included in the built in type declarations in the `lib` field of `tsconfig.json`
 
 <!--END-SECTION:official-typings-bugs-->
-
-<!--START-SECTION:non-ts-files-->
-
-# Time to Really Learn TypeScript
-
-Believe it or not, we have only barely introduced TypeScript here in this cheatsheet. There is a whole world of generic type logic that you will eventually get into, however it becomes far less dealing with React than just getting good at TypeScript so it is out of scope here. But at least you can get productive in React now :)
-
-It is worth mentioning some resources to help you get started:
-
-- Step through the 40+ examples under [the playground's](http://www.typescriptlang.org/play/index.html) Examples section, written by @Orta
-- Anders Hejlsberg's overview of TS: https://www.youtube.com/watch?v=ET4kT88JRXs
-- Marius Schultz: https://blog.mariusschulz.com/series/typescript-evolution with an [Egghead.io course](https://egghead.io/courses/advanced-static-types-in-typescript)
-- Basarat's Deep Dive: https://basarat.gitbook.io/typescript/
-- Rares Matei: [Egghead.io course](https://egghead.io/courses/practical-advanced-typescript)'s advanced TypeScript course on Egghead.io is great for newer typescript features and practical type logic applications (e.g. recursively making all properties of a type `readonly`)
-- Shu Uesugi: [TypeScript for Beginner Programmers](https://ts.chibicode.com/)
-
-<!--END-SECTION:non-ts-files-->
 
 <!--START-SECTION:resources-->
 
